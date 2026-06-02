@@ -102,10 +102,17 @@ const CATEGORY_COLORS: Record<BillCategory, string> = {
 };
 
 const BRAND = {
-  espresso: "#F5F7ED", espressoMid: "#F8F9F1", terracotta: "#5A8F72",
-  gold: "#A7B77F", cream: "#FFFFFF", warmWhite: "#EFF2E6",
-  muted: "#6A7765", brown: "#A8B29A", darkBrown: "#526154",
-  green: "#5A8F72", red: "#D07360",
+  espresso: "#1D2E27",
+  espressoMid: "#284237",
+  terracotta: "#5F977C",
+  gold: "#9EB28D",
+  cream: "#F5F3EA",
+  warmWhite: "#E6EFE1",
+  muted: "#6B7B6F",
+  brown: "#768F7B",
+  darkBrown: "#324335",
+  green: "#7CAA92",
+  red: "#D16F5E",
 } as const;
 
 // ─── SAMPLE DATA ──────────────────────────────────────────────────────────────
@@ -314,7 +321,7 @@ function PeriodCard({ period, isCurrent, paidStatus, togglePaid }: PeriodCardPro
   const statusColor = isNegative ? BRAND.red : isTight ? BRAND.gold : BRAND.green;
 
   return (
-    <div style={{ background: BRAND.espressoMid, borderRadius: 10, marginBottom: "1rem", overflow: "hidden", border: `1px solid ${statusColor}30` }}>
+    <div style={{ background: BRAND.warmWhite, borderRadius: 10, marginBottom: "1rem", overflow: "hidden", border: `1px solid ${statusColor}30` }}>
       <div onClick={() => setExpanded(!expanded)} style={{ padding: "1.1rem 1.25rem", cursor: "pointer" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
@@ -328,7 +335,7 @@ function PeriodCard({ period, isCurrent, paidStatus, togglePaid }: PeriodCardPro
                 </div>
               )}
             </div>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.15rem" }}>{formatDate(period.payDate)}</div>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.15rem", color: BRAND.darkBrown }}>{formatDate(period.payDate)}</div>
             <div style={{ fontSize: "0.75rem", color: BRAND.muted, marginTop: "0.15rem" }}>
               {formatDate(period.startDate)} — {formatDate(period.endDate)}
             </div>
@@ -362,8 +369,8 @@ function PeriodCard({ period, isCurrent, paidStatus, togglePaid }: PeriodCardPro
                   <div key={i} onClick={() => togglePaid(incomeKey)}
                     style={{ display: "flex", justifyContent: "space-between", padding: "0.5rem 0", borderBottom: "1px solid rgba(245,237,224,0.05)", fontSize: "0.85rem", cursor: "pointer", opacity: isReceived ? 0.6 : 1, transition: "opacity 0.2s" }}>
                     <div>
-                      <div style={{ fontWeight: 500, color: isReceived ? BRAND.muted : BRAND.cream }}>{src.name}</div>
-                      <div style={{ fontSize: "0.7rem", color: BRAND.muted }}>· {formatDate(src.date)}</div>
+                              <div style={{ fontWeight: 500, color: isReceived ? BRAND.muted : BRAND.darkBrown }}>{src.name}</div>
+                              <div style={{ fontSize: "0.7rem", color: BRAND.muted }}>· {formatDate(src.date)}</div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                       <span style={{ color: BRAND.green, fontFamily: "Georgia, serif" }}>{formatMoney(src.amount)}</span>
@@ -393,12 +400,12 @@ function PeriodCard({ period, isCurrent, paidStatus, togglePaid }: PeriodCardPro
                       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1 }}>
                         <div style={{ width: 8, height: 8, borderRadius: 2, background: catColor, flexShrink: 0 }} />
                         <div>
-                          <div style={{ fontSize: "0.85rem", textDecoration: isPaid ? "line-through" : "none", color: isPaid ? BRAND.muted : BRAND.cream }}>{bill.name}</div>
+                          <div style={{ fontSize: "0.85rem", textDecoration: isPaid ? "line-through" : "none", color: isPaid ? BRAND.muted : BRAND.darkBrown }}>{bill.name}</div>
                           <div style={{ fontSize: "0.68rem", color: BRAND.muted }}>Due {formatDate(bill.dueDate)} · {bill.category}</div>
                         </div>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <span style={{ fontFamily: "Georgia, serif", fontSize: "0.95rem", color: isPaid ? BRAND.muted : BRAND.cream }}>{formatMoney(bill.estimatedAmount)}</span>
+                        <span style={{ fontFamily: "Georgia, serif", fontSize: "0.95rem", color: isPaid ? BRAND.muted : BRAND.darkBrown }}>{formatMoney(bill.estimatedAmount)}</span>
                         <span style={{ fontSize: "1rem" }}>{isPaid ? "✅" : "⬜"}</span>
                       </div>
                     </div>
@@ -897,7 +904,7 @@ export default function PaycheckBudget() {
   );
 
   return (
-    <div style={{ background: BRAND.espresso, minHeight: "100vh", fontFamily: "system-ui, sans-serif", color: BRAND.cream }}>
+    <div style={{ background: BRAND.espresso, minHeight: "100vh", fontFamily: "system-ui, sans-serif", color: BRAND.darkBrown }}>
       <header style={{ background: BRAND.espressoMid, padding: "1rem 1.25rem", borderBottom: "1px solid rgba(201,164,68,0.2)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
@@ -911,7 +918,7 @@ export default function PaycheckBudget() {
         </div>
       </header>
 
-      <main style={{ maxWidth: 700, margin: "0 auto", padding: "1.5rem 1.25rem 6rem" }}>
+      <main style={{ maxWidth: 700, margin: "1.5rem auto 6rem", padding: "1.75rem 1.5rem", background: BRAND.cream, borderRadius: 20, boxShadow: "0 30px 80px rgba(0,0,0,0.06)", border: "1px solid rgba(50,67,55,0.06)", color: BRAND.darkBrown }}>
         {tab === "dashboard" && <Dashboard periods={periods} currentPeriodIndex={currentPeriodIndex} settings={settings} updateSettings={updateSettings} paidStatus={paidStatus} togglePaid={togglePaid} />}
         {tab === "bills"     && <BillsManager bills={bills} updateBills={updateBills} />}
         {tab === "income"    && <IncomeManager income={income} updateIncome={updateIncome} />}
