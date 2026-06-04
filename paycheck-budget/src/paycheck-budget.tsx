@@ -102,30 +102,30 @@ const CATEGORY_COLORS: Record<BillCategory, string> = {
 };
 
 const BRAND = {
-  bg: "#F6F3EB",
-  cardBg: "#FFFFFF",
-  cardBorder: "#E4EDE8",
+  bg: "#D5D1C5",
+  cardBg: "#F2EEE5",
+  cardBorder: "#C8D2CC",
 
-  sage: "#6B9A78",
-  sageDark: "#4D7A5A",
-  sagePale: "#EBF4EE",
+  sage: "#5D8A6A",
+  sageDark: "#3F6A4C",
+  sagePale: "#DBE9DF",
 
-  rose: "#C4837A",
-  roseDark: "#A46860",
-  rosePale: "#F5EDEB",
+  rose: "#B07268",
+  roseDark: "#8E5850",
+  rosePale: "#EAE0DD",
 
   textDark: "#2C3A30",
   textMid: "#5C7265",
-  textMuted: "#8FA095",
+  textMuted: "#6A7C70",
 
-  gold: "#C8A882",
-  goldDark: "#A8845E",
+  gold: "#B89268",
+  goldDark: "#987248",
 
   green: "#5A8A6C",
   red: "#B85050",
 
-  border: "#DDE8E2",
-  divider: "#EEF3F0",
+  border: "#C8D2CC",
+  divider: "#E2DDD4",
 } as const;
 
 // ─── SAMPLE DATA ──────────────────────────────────────────────────────────────
