@@ -96,23 +96,36 @@ const CATEGORIES: BillCategory[] = [
 ];
 
 const CATEGORY_COLORS: Record<BillCategory, string> = {
-  housing: "#8DA281", utilities: "#A7B77F", transport: "#5A8F72",
-  insurance: "#7A8B7A", subscriptions: "#B1C69A", personal: "#CAD8AD",
-  debt: "#CE8A78", childcare: "#8C9F82", other: "#9AA68F",
+  housing: "#6B9A78", utilities: "#8AAF9A", transport: "#5C8A70",
+  insurance: "#7A9E88", subscriptions: "#A0BEA8", personal: "#C4837A",
+  debt: "#B87068", childcare: "#8C9F82", other: "#A0A890",
 };
 
 const BRAND = {
-  espresso: "#1D2E27",
-  espressoMid: "#284237",
-  terracotta: "#5F977C",
-  gold: "#9EB28D",
-  cream: "#F5F3EA",
-  warmWhite: "#E6EFE1",
-  muted: "#6B7B6F",
-  brown: "#768F7B",
-  darkBrown: "#324335",
-  green: "#7CAA92",
-  red: "#D16F5E",
+  bg: "#F6F3EB",
+  cardBg: "#FFFFFF",
+  cardBorder: "#E4EDE8",
+
+  sage: "#6B9A78",
+  sageDark: "#4D7A5A",
+  sagePale: "#EBF4EE",
+
+  rose: "#C4837A",
+  roseDark: "#A46860",
+  rosePale: "#F5EDEB",
+
+  textDark: "#2C3A30",
+  textMid: "#5C7265",
+  textMuted: "#8FA095",
+
+  gold: "#C8A882",
+  goldDark: "#A8845E",
+
+  green: "#5A8A6C",
+  red: "#B85050",
+
+  border: "#DDE8E2",
+  divider: "#EEF3F0",
 } as const;
 
 // ─── SAMPLE DATA ──────────────────────────────────────────────────────────────
@@ -271,15 +284,34 @@ function getIncomeForPeriod(
 
 const labelSt: CSSProperties = {
   display: "block", fontSize: "0.68rem", letterSpacing: "0.15em",
-  textTransform: "uppercase", color: BRAND.muted, marginBottom: "0.4rem",
+  textTransform: "uppercase", color: BRAND.textMuted, marginBottom: "0.4rem",
 };
 
 const inputSt: CSSProperties = {
   width: "100%", padding: "0.65rem 0.75rem",
-  background: "rgba(0,0,0,0.25)", border: "1px solid rgba(245,237,224,0.12)",
-  borderRadius: 6, color: BRAND.cream, fontSize: "0.88rem",
+  background: BRAND.cardBg, border: `1px solid ${BRAND.border}`,
+  borderRadius: 6, color: BRAND.textDark, fontSize: "0.88rem",
   fontFamily: "inherit", outline: "none", boxSizing: "border-box",
 };
+
+// ─── SECTION HEADER ───────────────────────────────────────────────────────────
+
+interface SectionHeaderProps {
+  label: string;
+  color?: string;
+}
+
+function SectionHeader({ label, color = BRAND.sage }: SectionHeaderProps) {
+  return (
+    <div style={{
+      background: color, color: "#fff", padding: "0.45rem 0.85rem",
+      borderRadius: "6px 6px 0 0", fontSize: "0.62rem", letterSpacing: "0.2em",
+      textTransform: "uppercase", fontWeight: 600,
+    }}>
+      {label}
+    </div>
+  );
+}
 
 // ─── MINI STAT ────────────────────────────────────────────────────────────────
 
@@ -289,11 +321,11 @@ interface MiniStatProps {
   color?: string;
 }
 
-function MiniStat({ label, value, color = BRAND.muted }: MiniStatProps) {
+function MiniStat({ label, value, color = BRAND.textMid }: MiniStatProps) {
   return (
     <div style={{ textAlign: "center", flex: 1 }}>
-      <div style={{ fontFamily: "Georgia, serif", fontSize: "0.85rem", color }}>{value}</div>
-      <div style={{ fontSize: "0.55rem", color: BRAND.muted, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
+      <div style={{ fontFamily: "Georgia, serif", fontSize: "0.9rem", color, fontWeight: 500 }}>{value}</div>
+      <div style={{ fontSize: "0.55rem", color: BRAND.textMuted, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "0.15rem" }}>{label}</div>
     </div>
   );
 }
@@ -321,105 +353,199 @@ function PeriodCard({ period, isCurrent, paidStatus, togglePaid }: PeriodCardPro
   const statusColor = isNegative ? BRAND.red : isTight ? BRAND.gold : BRAND.green;
 
   return (
-    <div style={{ background: BRAND.warmWhite, borderRadius: 10, marginBottom: "1rem", overflow: "hidden", border: `1px solid ${statusColor}30` }}>
+    <div style={{
+      background: BRAND.cardBg, borderRadius: 10, marginBottom: "1rem",
+      overflow: "hidden", border: `1px solid ${BRAND.cardBorder}`,
+      boxShadow: "0 2px 8px rgba(44,58,48,0.06)",
+    }}>
+      {/* Card top accent bar */}
+      <div style={{ height: 3, background: isCurrent ? BRAND.sage : BRAND.border }} />
+
       <div onClick={() => setExpanded(!expanded)} style={{ padding: "1.1rem 1.25rem", cursor: "pointer" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-              <div style={{ fontSize: "0.65rem", color: BRAND.gold, textTransform: "uppercase", letterSpacing: "0.15em" }}>
+              <div style={{
+                fontSize: "0.6rem", color: BRAND.sage, textTransform: "uppercase",
+                letterSpacing: "0.18em", fontWeight: 600,
+              }}>
                 Paycheck {period.periodNumber}
               </div>
               {isCurrent && (
-                <div style={{ fontSize: "0.63rem", color: BRAND.green, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  Current period
+                <div style={{
+                  fontSize: "0.58rem", color: "#fff", background: BRAND.sage,
+                  borderRadius: 20, padding: "0.1rem 0.5rem",
+                  textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600,
+                }}>
+                  Current
                 </div>
               )}
             </div>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.15rem", color: BRAND.darkBrown }}>{formatDate(period.payDate)}</div>
-            <div style={{ fontSize: "0.75rem", color: BRAND.muted, marginTop: "0.15rem" }}>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.15rem", color: BRAND.textDark, fontWeight: 400 }}>
+              {formatDate(period.payDate)}
+            </div>
+            <div style={{ fontSize: "0.72rem", color: BRAND.textMuted, marginTop: "0.15rem" }}>
               {formatDate(period.startDate)} — {formatDate(period.endDate)}
             </div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "0.62rem", color: BRAND.muted, textTransform: "uppercase", letterSpacing: "0.08em" }}>Projected Balance</div>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", color: statusColor }}>{formatMoney(projectedBalance)}</div>
-            <div style={{ fontSize: "0.7rem", color: BRAND.muted }}>{period.bills.length} bills · {formatMoney(period.totalBills)}</div>
+            <div style={{ fontSize: "0.6rem", color: BRAND.textMuted, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Projected Balance
+            </div>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.6rem", color: statusColor, fontWeight: 400 }}>
+              {formatMoney(projectedBalance)}
+            </div>
+            <div style={{ fontSize: "0.68rem", color: BRAND.textMuted }}>
+              {period.bills.length} bills · {formatMoney(period.totalBills)}
+            </div>
           </div>
         </div>
-        <div style={{ marginTop: "0.85rem", display: "flex", gap: "0.75rem" }}>
+
+        <div style={{
+          marginTop: "1rem", display: "flex", gap: "0.5rem",
+          background: BRAND.divider, borderRadius: 8, padding: "0.75rem 0.5rem",
+        }}>
           <MiniStat label="Opening"  value={formatMoney(period.openingBalance)} />
-          <span style={{ color: BRAND.muted, fontSize: "0.8rem", alignSelf: "flex-end", paddingBottom: "0.1rem" }}>+</span>
+          <span style={{ color: BRAND.textMuted, fontSize: "0.8rem", alignSelf: "center" }}>+</span>
           <MiniStat label="Income"   value={formatMoney(pendingIncome)}    color={BRAND.green} />
-          <span style={{ color: BRAND.muted, fontSize: "0.8rem", alignSelf: "flex-end", paddingBottom: "0.1rem" }}>−</span>
-          <MiniStat label="Bills"    value={formatMoney(pendingBills)}     color={BRAND.terracotta} />
-          <span style={{ color: BRAND.muted, fontSize: "0.8rem", alignSelf: "flex-end", paddingBottom: "0.1rem" }}>=</span>
+          <span style={{ color: BRAND.textMuted, fontSize: "0.8rem", alignSelf: "center" }}>−</span>
+          <MiniStat label="Bills"    value={formatMoney(pendingBills)}     color={BRAND.rose} />
+          <span style={{ color: BRAND.textMuted, fontSize: "0.8rem", alignSelf: "center" }}>=</span>
           <MiniStat label="Left"     value={formatMoney(projectedBalance)} color={statusColor} />
         </div>
       </div>
 
       {expanded && (
-        <div style={{ borderTop: "1px solid rgba(245,237,224,0.07)", padding: "1rem 1.25rem" }}>
+        <div style={{ borderTop: `1px solid ${BRAND.divider}` }}>
           {period.incomeSources.length > 0 && (
-            <div style={{ marginBottom: "1rem" }}>
-              <div style={{ fontSize: "0.65rem", color: BRAND.green, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "0.5rem" }}>Income This Period</div>
-              {period.incomeSources.map((src, i) => {
-                const incomeKey = `income-${period.id}-${src.id}`;
-                const isReceived = !!paidStatus[incomeKey];
-                return (
-                  <div key={i} onClick={() => togglePaid(incomeKey)}
-                    style={{ display: "flex", justifyContent: "space-between", padding: "0.5rem 0", borderBottom: "1px solid rgba(245,237,224,0.05)", fontSize: "0.85rem", cursor: "pointer", opacity: isReceived ? 0.6 : 1, transition: "opacity 0.2s" }}>
-                    <div>
-                              <div style={{ fontWeight: 500, color: isReceived ? BRAND.muted : BRAND.darkBrown }}>{src.name}</div>
-                              <div style={{ fontSize: "0.7rem", color: BRAND.muted }}>· {formatDate(src.date)}</div>
+            <div>
+              <SectionHeader label="Income This Period" color={BRAND.sage} />
+              <div style={{ padding: "0.75rem 1.25rem 1rem" }}>
+                {period.incomeSources.map((src, i) => {
+                  const incomeKey = `income-${period.id}-${src.id}`;
+                  const isReceived = !!paidStatus[incomeKey];
+                  return (
+                    <div key={i} onClick={() => togglePaid(incomeKey)}
+                      style={{
+                        display: "flex", justifyContent: "space-between",
+                        padding: "0.55rem 0.65rem", borderBottom: `1px solid ${BRAND.divider}`,
+                        fontSize: "0.85rem", cursor: "pointer",
+                        opacity: isReceived ? 0.5 : 1, transition: "opacity 0.2s",
+                        borderRadius: 4, background: isReceived ? BRAND.sagePale : "transparent",
+                      }}>
+                      <div>
+                        <div style={{ fontWeight: 500, color: isReceived ? BRAND.textMuted : BRAND.textDark }}>
+                          {src.name}
+                        </div>
+                        <div style={{ fontSize: "0.7rem", color: BRAND.textMuted }}>
+                          {formatDate(src.date)}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <span style={{ color: BRAND.green, fontFamily: "Georgia, serif", fontWeight: 500 }}>
+                          {formatMoney(src.amount)}
+                        </span>
+                        <span style={{
+                          width: 18, height: 18, borderRadius: 4,
+                          border: `2px solid ${isReceived ? BRAND.sage : BRAND.border}`,
+                          background: isReceived ? BRAND.sage : "transparent",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          flexShrink: 0,
+                        }}>
+                          {isReceived && <span style={{ color: "#fff", fontSize: "0.65rem", fontWeight: 700 }}>✓</span>}
+                        </span>
+                      </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      <span style={{ color: BRAND.green, fontFamily: "Georgia, serif" }}>{formatMoney(src.amount)}</span>
-                      <span style={{ fontSize: "1rem" }}>{isReceived ? "✅" : "⬜"}</span>
-                    </div>
-                  </div>
-                );
-              })}
-              <div style={{ fontSize: "0.72rem", color: BRAND.muted, marginTop: "0.5rem" }}>Tap an income item if it is already included in your current balance.</div>
+                  );
+                })}
+                <div style={{ fontSize: "0.7rem", color: BRAND.textMuted, marginTop: "0.6rem" }}>
+                  Tap an income item if it is already included in your current balance.
+                </div>
+              </div>
             </div>
           )}
 
           <div>
-            <div style={{ fontSize: "0.65rem", color: BRAND.terracotta, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "0.5rem" }}>Bills Due This Period</div>
-            {period.bills.length === 0 ? (
-              <div style={{ color: BRAND.muted, fontSize: "0.82rem", padding: "0.5rem 0" }}>No bills due this period 🎉</div>
-            ) : (
-              [...period.bills]
-                .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-                .map((bill) => {
-                  const paidKey = `${period.id}-${bill.id}`;
-                  const isPaid = !!paidStatus[paidKey];
-                  const catColor = CATEGORY_COLORS[bill.category];
-                  return (
-                    <div key={bill.id} onClick={() => togglePaid(paidKey)}
-                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.6rem 0.5rem", borderBottom: "1px solid rgba(245,237,224,0.05)", cursor: "pointer", borderRadius: 4, opacity: isPaid ? 0.5 : 1, transition: "opacity 0.2s" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: 2, background: catColor, flexShrink: 0 }} />
-                        <div>
-                          <div style={{ fontSize: "0.85rem", textDecoration: isPaid ? "line-through" : "none", color: isPaid ? BRAND.muted : BRAND.darkBrown }}>{bill.name}</div>
-                          <div style={{ fontSize: "0.68rem", color: BRAND.muted }}>Due {formatDate(bill.dueDate)} · {bill.category}</div>
+            <SectionHeader label="Bills Due This Period" color={BRAND.rose} />
+            <div style={{ padding: "0.75rem 1.25rem 1rem" }}>
+              {period.bills.length === 0 ? (
+                <div style={{ color: BRAND.textMuted, fontSize: "0.82rem", padding: "0.5rem 0" }}>
+                  No bills due this period
+                </div>
+              ) : (
+                [...period.bills]
+                  .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+                  .map((bill) => {
+                    const paidKey = `${period.id}-${bill.id}`;
+                    const isPaid = !!paidStatus[paidKey];
+                    const catColor = CATEGORY_COLORS[bill.category];
+                    return (
+                      <div key={bill.id} onClick={() => togglePaid(paidKey)}
+                        style={{
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                          padding: "0.55rem 0.65rem", borderBottom: `1px solid ${BRAND.divider}`,
+                          cursor: "pointer", borderRadius: 4,
+                          opacity: isPaid ? 0.45 : 1, transition: "opacity 0.2s",
+                          background: isPaid ? BRAND.rosePale : "transparent",
+                        }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1 }}>
+                          <div style={{
+                            width: 8, height: 8, borderRadius: 2,
+                            background: catColor, flexShrink: 0,
+                          }} />
+                          <div>
+                            <div style={{
+                              fontSize: "0.85rem",
+                              textDecoration: isPaid ? "line-through" : "none",
+                              color: isPaid ? BRAND.textMuted : BRAND.textDark,
+                            }}>
+                              {bill.name}
+                            </div>
+                            <div style={{ fontSize: "0.67rem", color: BRAND.textMuted }}>
+                              Due {formatDate(bill.dueDate)} · {bill.category}
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                          <span style={{
+                            fontFamily: "Georgia, serif", fontSize: "0.95rem",
+                            color: isPaid ? BRAND.textMuted : BRAND.textDark,
+                          }}>
+                            {formatMoney(bill.estimatedAmount)}
+                          </span>
+                          <span style={{
+                            width: 18, height: 18, borderRadius: 4,
+                            border: `2px solid ${isPaid ? BRAND.rose : BRAND.border}`,
+                            background: isPaid ? BRAND.rose : "transparent",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            flexShrink: 0,
+                          }}>
+                            {isPaid && <span style={{ color: "#fff", fontSize: "0.65rem", fontWeight: 700 }}>✓</span>}
+                          </span>
                         </div>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <span style={{ fontFamily: "Georgia, serif", fontSize: "0.95rem", color: isPaid ? BRAND.muted : BRAND.darkBrown }}>{formatMoney(bill.estimatedAmount)}</span>
-                        <span style={{ fontSize: "1rem" }}>{isPaid ? "✅" : "⬜"}</span>
-                      </div>
-                    </div>
-                  );
-                })
-            )}
+                    );
+                  })
+              )}
+            </div>
           </div>
 
-          <div style={{ marginTop: "1rem", padding: "0.85rem", background: "rgba(0,0,0,0.2)", borderRadius: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{
+            margin: "0 1.25rem 1.25rem", padding: "0.85rem 1rem",
+            background: BRAND.divider, borderRadius: 8,
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+          }}>
             <div>
-              <div style={{ fontSize: "0.65rem", color: BRAND.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>Projected Balance After Pending Items</div>
-              <div style={{ fontSize: "0.72rem", color: BRAND.muted, marginTop: "0.1rem" }}>Checked items are already included in your current balance.</div>
+              <div style={{ fontSize: "0.62rem", color: BRAND.textMuted, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                Projected Balance After Pending Items
+              </div>
+              <div style={{ fontSize: "0.7rem", color: BRAND.textMuted, marginTop: "0.1rem" }}>
+                Checked items are already included in your balance.
+              </div>
             </div>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", color: projectedBalance < 0 ? BRAND.red : BRAND.gold }}>{formatMoney(projectedBalance)}</div>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.45rem", color: projectedBalance < 0 ? BRAND.red : BRAND.sage, fontWeight: 400 }}>
+              {formatMoney(projectedBalance)}
+            </div>
           </div>
         </div>
       )}
@@ -452,20 +578,28 @@ function Dashboard({ periods, currentPeriodIndex, settings, updateSettings, paid
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <div>
-          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", fontWeight: 300, margin: 0 }}>Your Paychecks</h2>
-          <div style={{ fontSize: "0.78rem", color: BRAND.muted, marginTop: "0.2rem" }}>Bills auto-sorted by pay period</div>
+          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", fontWeight: 400, margin: 0, color: BRAND.textDark }}>
+            Your Paychecks
+          </h2>
+          <div style={{ fontSize: "0.75rem", color: BRAND.textMuted, marginTop: "0.2rem" }}>
+            Bills auto-sorted by pay period
+          </div>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: "0.62rem", color: BRAND.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>Current Period Opening Balance</div>
+          <div style={{ fontSize: "0.6rem", color: BRAND.textMuted, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Opening Balance
+          </div>
           {editBalance ? (
             <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
               <input value={tempBalance} onChange={(e) => setTempBalance(e.target.value)}
-                style={{ width: 90, padding: "0.25rem 0.5rem", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(201,164,68,0.4)", borderRadius: 4, color: BRAND.cream, fontSize: "0.9rem", fontFamily: "inherit" }} />
-              <button onClick={saveBalance} style={{ background: BRAND.terracotta, color: BRAND.cream, border: "none", borderRadius: 4, padding: "0.25rem 0.6rem", cursor: "pointer", fontSize: "0.75rem" }}>Save</button>
+                style={{ width: 90, padding: "0.25rem 0.5rem", background: BRAND.cardBg, border: `1px solid ${BRAND.sage}`, borderRadius: 4, color: BRAND.textDark, fontSize: "0.9rem", fontFamily: "inherit" }} />
+              <button onClick={saveBalance} style={{ background: BRAND.sage, color: "#fff", border: "none", borderRadius: 4, padding: "0.25rem 0.6rem", cursor: "pointer", fontSize: "0.75rem" }}>
+                Save
+              </button>
             </div>
           ) : (
             <div onClick={() => { setTempBalance(String(settings.currentBalance)); setEditBalance(true); }}
-              style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", color: BRAND.gold, cursor: "pointer" }}>
+              style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", color: BRAND.sage, cursor: "pointer", fontWeight: 400 }}>
               {formatMoney(settings.currentBalance)} ✏️
             </div>
           )}
@@ -526,50 +660,81 @@ function BillsManager({ bills, updateBills }: BillsManagerProps) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <div>
-          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", fontWeight: 300, margin: 0 }}>Bills & Expenses</h2>
-          <div style={{ fontSize: "0.75rem", color: BRAND.muted, marginTop: "0.2rem" }}>Monthly total: {formatMoney(monthlyTotal)}</div>
+          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", fontWeight: 400, margin: 0, color: BRAND.textDark }}>
+            Bills & Expenses
+          </h2>
+          <div style={{ fontSize: "0.75rem", color: BRAND.textMuted, marginTop: "0.2rem" }}>
+            Monthly total: {formatMoney(monthlyTotal)}
+          </div>
         </div>
         <button onClick={() => setShowAdd(!showAdd)}
-          style={{ padding: "0.55rem 1.1rem", background: BRAND.terracotta, color: BRAND.cream, border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.82rem" }}>
+          style={{ padding: "0.55rem 1.1rem", background: BRAND.rose, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.82rem", fontWeight: 500 }}>
           + Add Bill
         </button>
       </div>
 
       {showAdd && (
-        <div style={{ background: BRAND.espressoMid, borderRadius: 8, padding: "1.25rem", marginBottom: "1.5rem", border: "1px solid rgba(196,98,45,0.3)" }}>
-          <div style={{ fontSize: "0.68rem", color: BRAND.gold, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem" }}>New Bill</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-            <div><label style={labelSt}>Bill Name</label><input value={newBill.name} onChange={(e) => setNewBill({ ...newBill, name: e.target.value })} placeholder="e.g. Netflix" style={inputSt} /></div>
-            <div><label style={labelSt}>Category</label>
-              <select value={newBill.category} onChange={(e) => setNewBill({ ...newBill, category: e.target.value as BillCategory })} style={{ ...inputSt, cursor: "pointer" }}>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+        <div style={{
+          background: BRAND.cardBg, borderRadius: 8, marginBottom: "1.5rem",
+          border: `1px solid ${BRAND.rose}40`, overflow: "hidden",
+          boxShadow: "0 2px 8px rgba(196,131,122,0.12)",
+        }}>
+          <SectionHeader label="New Bill" color={BRAND.rose} />
+          <div style={{ padding: "1.25rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+              <div><label style={labelSt}>Bill Name</label><input value={newBill.name} onChange={(e) => setNewBill({ ...newBill, name: e.target.value })} placeholder="e.g. Netflix" style={inputSt} /></div>
+              <div><label style={labelSt}>Category</label>
+                <select value={newBill.category} onChange={(e) => setNewBill({ ...newBill, category: e.target.value as BillCategory })} style={{ ...inputSt, cursor: "pointer" }}>
+                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div><label style={labelSt}>Amount ($)</label><input type="number" value={newBill.estimatedAmount} onChange={(e) => setNewBill({ ...newBill, estimatedAmount: e.target.value })} placeholder="0.00" style={inputSt} /></div>
+              <div><label style={labelSt}>Due Day (1–31)</label><input type="number" value={newBill.dayOfMonth} onChange={(e) => setNewBill({ ...newBill, dayOfMonth: e.target.value })} placeholder="e.g. 15" min={1} max={31} style={inputSt} /></div>
             </div>
-            <div><label style={labelSt}>Amount ($)</label><input type="number" value={newBill.estimatedAmount} onChange={(e) => setNewBill({ ...newBill, estimatedAmount: e.target.value })} placeholder="0.00" style={inputSt} /></div>
-            <div><label style={labelSt}>Due Day (1–31)</label><input type="number" value={newBill.dayOfMonth} onChange={(e) => setNewBill({ ...newBill, dayOfMonth: e.target.value })} placeholder="e.g. 15" min={1} max={31} style={inputSt} /></div>
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button onClick={addBill} style={{ flex: 1, padding: "0.65rem", background: BRAND.terracotta, color: BRAND.cream, border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.85rem" }}>Save Bill</button>
-            <button onClick={() => setShowAdd(false)} style={{ padding: "0.65rem 1rem", background: "transparent", color: BRAND.muted, border: "1px solid rgba(245,237,224,0.12)", borderRadius: 6, cursor: "pointer", fontSize: "0.85rem" }}>Cancel</button>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button onClick={addBill} style={{ flex: 1, padding: "0.65rem", background: BRAND.rose, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.85rem", fontWeight: 500 }}>Save Bill</button>
+              <button onClick={() => setShowAdd(false)} style={{ padding: "0.65rem 1rem", background: "transparent", color: BRAND.textMuted, border: `1px solid ${BRAND.border}`, borderRadius: 6, cursor: "pointer", fontSize: "0.85rem" }}>Cancel</button>
+            </div>
           </div>
         </div>
       )}
 
       {Object.entries(grouped).map(([cat, catBills]) => (
-        <div key={cat} style={{ marginBottom: "1.25rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: CATEGORY_COLORS[cat as BillCategory] }} />
-            <span style={{ fontSize: "0.68rem", color: CATEGORY_COLORS[cat as BillCategory], textTransform: "uppercase", letterSpacing: "0.15em" }}>{cat}</span>
-            <span style={{ fontSize: "0.68rem", color: BRAND.muted }}>· {formatMoney(catBills.filter((b) => b.isActive).reduce((s, b) => s + b.estimatedAmount, 0))}/mo</span>
+        <div key={cat} style={{ marginBottom: "1.25rem", background: BRAND.cardBg, borderRadius: 8, overflow: "hidden", border: `1px solid ${BRAND.cardBorder}`, boxShadow: "0 1px 4px rgba(44,58,48,0.05)" }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: "0.6rem",
+            padding: "0.5rem 0.85rem",
+            background: `${CATEGORY_COLORS[cat as BillCategory]}18`,
+            borderBottom: `1px solid ${BRAND.divider}`,
+          }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: CATEGORY_COLORS[cat as BillCategory] }} />
+            <span style={{ fontSize: "0.65rem", color: CATEGORY_COLORS[cat as BillCategory], textTransform: "uppercase", letterSpacing: "0.18em", fontWeight: 600 }}>{cat}</span>
+            <span style={{ fontSize: "0.65rem", color: BRAND.textMuted }}>
+              · {formatMoney(catBills.filter((b) => b.isActive).reduce((s, b) => s + b.estimatedAmount, 0))}/mo
+            </span>
           </div>
-          {catBills.map((bill) => (
-            <div key={bill.id} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.65rem 0.75rem", background: BRAND.espressoMid, borderRadius: 6, marginBottom: "0.4rem", opacity: bill.isActive ? 1 : 0.45 }}>
+          {catBills.map((bill, idx) => (
+            <div key={bill.id} style={{
+              display: "flex", alignItems: "center", gap: "0.75rem",
+              padding: "0.7rem 0.85rem",
+              borderBottom: idx < catBills.length - 1 ? `1px solid ${BRAND.divider}` : "none",
+              opacity: bill.isActive ? 1 : 0.4,
+              background: "transparent",
+            }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "0.87rem", color: BRAND.cream }}>{bill.name}</div>
-                <div style={{ fontSize: "0.7rem", color: BRAND.muted }}>Due on the {bill.dayOfMonth}{getOrdinalSuffix(bill.dayOfMonth)} · {formatMoney(bill.estimatedAmount)}/mo</div>
+                <div style={{ fontSize: "0.87rem", color: BRAND.textDark }}>{bill.name}</div>
+                <div style={{ fontSize: "0.68rem", color: BRAND.textMuted }}>
+                  Due on the {bill.dayOfMonth}{getOrdinalSuffix(bill.dayOfMonth)} · {formatMoney(bill.estimatedAmount)}/mo
+                </div>
               </div>
-              <button onClick={() => toggleBill(bill.id)} style={{ background: "transparent", border: "none", cursor: "pointer", color: bill.isActive ? BRAND.green : BRAND.muted, fontSize: "1.1rem" }}>{bill.isActive ? "✅" : "⬜"}</button>
-              <button onClick={() => deleteBill(bill.id)} style={{ background: "transparent", border: "none", cursor: "pointer", color: BRAND.muted, fontSize: "1rem" }}>🗑️</button>
+              <button onClick={() => toggleBill(bill.id)} style={{
+                background: "transparent", border: "none", cursor: "pointer",
+                fontSize: "0.75rem", padding: "0.25rem 0.5rem",
+                color: bill.isActive ? BRAND.sage : BRAND.textMuted,
+              }}>
+                {bill.isActive ? "Active" : "Off"}
+              </button>
+              <button onClick={() => deleteBill(bill.id)} style={{ background: "transparent", border: "none", cursor: "pointer", color: BRAND.textMuted, fontSize: "1rem" }}>🗑️</button>
             </div>
           ))}
         </div>
@@ -617,45 +782,65 @@ function IncomeManager({ income, updateIncome }: IncomeManagerProps) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <div>
-          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", fontWeight: 300, margin: 0 }}>Income Sources</h2>
-          <div style={{ fontSize: "0.75rem", color: BRAND.muted, marginTop: "0.2rem" }}>Est. monthly: {formatMoney(estMonthly)}</div>
+          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", fontWeight: 400, margin: 0, color: BRAND.textDark }}>
+            Income Sources
+          </h2>
+          <div style={{ fontSize: "0.75rem", color: BRAND.textMuted, marginTop: "0.2rem" }}>
+            Est. monthly: {formatMoney(estMonthly)}
+          </div>
         </div>
-        <button onClick={() => setShowAdd(!showAdd)} style={{ padding: "0.55rem 1.1rem", background: BRAND.green, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.82rem" }}>+ Add Income</button>
+        <button onClick={() => setShowAdd(!showAdd)} style={{ padding: "0.55rem 1.1rem", background: BRAND.sage, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.82rem", fontWeight: 500 }}>
+          + Add Income
+        </button>
       </div>
 
       {showAdd && (
-        <div style={{ background: BRAND.espressoMid, borderRadius: 8, padding: "1.25rem", marginBottom: "1.5rem", border: "1px solid rgba(46,139,87,0.3)" }}>
-          <div style={{ fontSize: "0.68rem", color: BRAND.green, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem" }}>New Income Source</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-            <div><label style={labelSt}>Source Name</label><input value={newInc.name} onChange={(e) => setNewInc({ ...newInc, name: e.target.value })} placeholder="e.g. My Paycheck" style={inputSt} /></div>
-            <div><label style={labelSt}>Net Amount ($)</label><input type="number" value={newInc.amount} onChange={(e) => setNewInc({ ...newInc, amount: e.target.value })} placeholder="0.00" style={inputSt} /></div>
-            <div><label style={labelSt}>Frequency</label>
-              <select value={newInc.frequency} onChange={(e) => setNewInc({ ...newInc, frequency: e.target.value as IncomeFrequency })} style={{ ...inputSt, cursor: "pointer" }}>
-                <option value="biweekly">Every 2 weeks</option>
-                <option value="monthly">Monthly</option>
-              </select>
+        <div style={{
+          background: BRAND.cardBg, borderRadius: 8, marginBottom: "1.5rem",
+          border: `1px solid ${BRAND.sage}40`, overflow: "hidden",
+          boxShadow: "0 2px 8px rgba(107,154,120,0.12)",
+        }}>
+          <SectionHeader label="New Income Source" color={BRAND.sage} />
+          <div style={{ padding: "1.25rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+              <div><label style={labelSt}>Source Name</label><input value={newInc.name} onChange={(e) => setNewInc({ ...newInc, name: e.target.value })} placeholder="e.g. My Paycheck" style={inputSt} /></div>
+              <div><label style={labelSt}>Net Amount ($)</label><input type="number" value={newInc.amount} onChange={(e) => setNewInc({ ...newInc, amount: e.target.value })} placeholder="0.00" style={inputSt} /></div>
+              <div><label style={labelSt}>Frequency</label>
+                <select value={newInc.frequency} onChange={(e) => setNewInc({ ...newInc, frequency: e.target.value as IncomeFrequency })} style={{ ...inputSt, cursor: "pointer" }}>
+                  <option value="biweekly">Every 2 weeks</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              {newInc.frequency === "monthly" && (
+                <div><label style={labelSt}>Day of Month</label><input type="number" value={newInc.monthlyDay} onChange={(e) => setNewInc({ ...newInc, monthlyDay: e.target.value })} placeholder="e.g. 28" min={1} max={31} style={inputSt} /></div>
+              )}
             </div>
-            {newInc.frequency === "monthly" && (
-              <div><label style={labelSt}>Day of Month</label><input type="number" value={newInc.monthlyDay} onChange={(e) => setNewInc({ ...newInc, monthlyDay: e.target.value })} placeholder="e.g. 28" min={1} max={31} style={inputSt} /></div>
-            )}
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button onClick={add} style={{ flex: 1, padding: "0.65rem", background: BRAND.green, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.85rem" }}>Save</button>
-            <button onClick={() => setShowAdd(false)} style={{ padding: "0.65rem 1rem", background: "transparent", color: BRAND.muted, border: "1px solid rgba(245,237,224,0.12)", borderRadius: 6, cursor: "pointer", fontSize: "0.85rem" }}>Cancel</button>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button onClick={add} style={{ flex: 1, padding: "0.65rem", background: BRAND.sage, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.85rem", fontWeight: 500 }}>Save</button>
+              <button onClick={() => setShowAdd(false)} style={{ padding: "0.65rem 1rem", background: "transparent", color: BRAND.textMuted, border: `1px solid ${BRAND.border}`, borderRadius: 6, cursor: "pointer", fontSize: "0.85rem" }}>Cancel</button>
+            </div>
           </div>
         </div>
       )}
 
       {income.map((src) => (
-        <div key={src.id} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "1rem 1.1rem", background: BRAND.espressoMid, borderRadius: 8, marginBottom: "0.75rem", borderLeft: `3px solid ${BRAND.green}` }}>
+        <div key={src.id} style={{
+          display: "flex", alignItems: "center", gap: "0.75rem",
+          padding: "1rem 1.1rem", background: BRAND.cardBg, borderRadius: 8,
+          marginBottom: "0.75rem", borderLeft: `3px solid ${BRAND.sage}`,
+          border: `1px solid ${BRAND.cardBorder}`, borderLeftWidth: 3, borderLeftColor: BRAND.sage,
+          boxShadow: "0 1px 4px rgba(44,58,48,0.05)",
+        }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: "0.9rem", color: BRAND.cream, fontWeight: 500 }}>{src.name}</div>
-            <div style={{ fontSize: "0.72rem", color: BRAND.muted, marginTop: "0.2rem" }}>
+            <div style={{ fontSize: "0.9rem", color: BRAND.textDark, fontWeight: 500 }}>{src.name}</div>
+            <div style={{ fontSize: "0.72rem", color: BRAND.textMuted, marginTop: "0.2rem" }}>
               {formatMoney(src.amount)} · {src.frequency === "biweekly" ? "Every 2 weeks" : `Monthly on the ${src.monthlyDay}${src.monthlyDay ? getOrdinalSuffix(src.monthlyDay) : ""}`}
             </div>
           </div>
-          <div style={{ fontFamily: "Georgia, serif", fontSize: "1.2rem", color: BRAND.green }}>{formatMoney(src.amount)}</div>
-          <button onClick={() => del(src.id)} style={{ background: "transparent", border: "none", cursor: "pointer", color: BRAND.muted, fontSize: "1rem" }}>🗑️</button>
+          <div style={{ fontFamily: "Georgia, serif", fontSize: "1.2rem", color: BRAND.sage, fontWeight: 400 }}>
+            {formatMoney(src.amount)}
+          </div>
+          <button onClick={() => del(src.id)} style={{ background: "transparent", border: "none", cursor: "pointer", color: BRAND.textMuted, fontSize: "1rem" }}>🗑️</button>
         </div>
       ))}
     </div>
@@ -708,8 +893,8 @@ Respond ONLY in JSON (no markdown fences):
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json", 
-          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY, 
+        headers: { "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] }),
@@ -728,63 +913,92 @@ Respond ONLY in JSON (no markdown fences):
 
   return (
     <div>
-      <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", fontWeight: 300, marginBottom: "0.4rem" }}>AI Budget Advisor</h2>
-      <p style={{ color: BRAND.muted, fontSize: "0.82rem", marginBottom: "1.5rem" }}>Get a real analysis with specific suggestions for your Thailand savings goal.</p>
+      <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", fontWeight: 400, marginBottom: "0.4rem", color: BRAND.textDark }}>
+        AI Budget Advisor
+      </h2>
+      <p style={{ color: BRAND.textMuted, fontSize: "0.82rem", marginBottom: "1.5rem" }}>
+        Get a real analysis with specific suggestions for your Thailand savings goal.
+      </p>
 
       <button onClick={analyze} disabled={loading}
-        style={{ width: "100%", padding: "0.9rem", background: loading ? "rgba(245,237,224,0.08)" : BRAND.terracotta, color: BRAND.cream, border: "none", borderRadius: 8, cursor: loading ? "default" : "pointer", fontSize: "0.9rem", fontWeight: 500, marginBottom: "1.5rem" }}>
-        {loading ? "🤖 Analyzing your budget..." : "🤖 Analyze My Budget"}
+        style={{
+          width: "100%", padding: "0.9rem",
+          background: loading ? BRAND.divider : BRAND.sage,
+          color: loading ? BRAND.textMuted : "#fff",
+          border: "none", borderRadius: 8, cursor: loading ? "default" : "pointer",
+          fontSize: "0.9rem", fontWeight: 500, marginBottom: "1.5rem",
+          transition: "background 0.2s",
+        }}>
+        {loading ? "Analyzing your budget..." : "Analyze My Budget"}
       </button>
 
       {error && <div style={{ color: BRAND.red, fontSize: "0.83rem", marginBottom: "1rem" }}>{error}</div>}
 
       {analysis && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ background: BRAND.espressoMid, borderRadius: 8, padding: "1.25rem", borderTop: `3px solid ${healthColors[analysis.overallHealth]}` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <div style={{ fontSize: "0.68rem", color: BRAND.gold, textTransform: "uppercase", letterSpacing: "0.15em" }}>Budget Health</div>
-              <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.75rem", borderRadius: 12, background: `${healthColors[analysis.overallHealth]}20`, color: healthColors[analysis.overallHealth], textTransform: "capitalize" }}>{analysis.overallHealth}</span>
+          <div style={{
+            background: BRAND.cardBg, borderRadius: 8, overflow: "hidden",
+            border: `1px solid ${BRAND.cardBorder}`,
+            boxShadow: "0 2px 8px rgba(44,58,48,0.06)",
+          }}>
+            <div style={{ background: healthColors[analysis.overallHealth], padding: "0.45rem 0.85rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "0.62rem", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600, color: "#fff" }}>Budget Health</span>
+              <span style={{ fontSize: "0.72rem", color: "#fff", textTransform: "capitalize", fontWeight: 500 }}>{analysis.overallHealth}</span>
             </div>
-            <p style={{ fontSize: "0.87rem", color: BRAND.cream, lineHeight: 1.65, margin: 0 }}>{analysis.healthSummary}</p>
+            <div style={{ padding: "1rem 1.1rem" }}>
+              <p style={{ fontSize: "0.87rem", color: BRAND.textMid, lineHeight: 1.65, margin: 0 }}>{analysis.healthSummary}</p>
+            </div>
           </div>
 
-          <div style={{ background: BRAND.espressoMid, borderRadius: 8, padding: "1.25rem", borderTop: `3px solid ${BRAND.gold}` }}>
-            <div style={{ fontSize: "0.68rem", color: BRAND.gold, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>🇹🇭 Thailand Fund</div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem" }}>
-              <MiniStat label="Save/Month"    value={formatMoney(analysis.savingsOpportunity)} color={BRAND.green} />
-              <MiniStat label="Months to Goal" value={analysis.monthsToGoal}                    color={BRAND.gold} />
-              <MiniStat label="Saved"          value={formatMoney(settings.currentSavings)}     color={BRAND.terracotta} />
+          <div style={{ background: BRAND.cardBg, borderRadius: 8, overflow: "hidden", border: `1px solid ${BRAND.cardBorder}`, boxShadow: "0 2px 8px rgba(44,58,48,0.06)" }}>
+            <SectionHeader label={settings.savingsGoalName} color={BRAND.sage} />
+            <div style={{ padding: "1rem 1.1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
+                <MiniStat label="Save/Month"    value={formatMoney(analysis.savingsOpportunity)} color={BRAND.green} />
+                <MiniStat label="Months to Goal" value={analysis.monthsToGoal}                    color={BRAND.gold} />
+                <MiniStat label="Saved"          value={formatMoney(settings.currentSavings)}     color={BRAND.rose} />
+              </div>
+              <div style={{ background: BRAND.divider, borderRadius: 4, height: 6, overflow: "hidden", marginBottom: "0.85rem" }}>
+                <div style={{ height: "100%", background: BRAND.sage, width: `${Math.min(100, (settings.currentSavings / settings.savingsGoal) * 100)}%`, transition: "width 0.5s", borderRadius: 4 }} />
+              </div>
+              <p style={{ fontSize: "0.82rem", color: BRAND.textMid, fontStyle: "italic", margin: 0 }}>{analysis.encouragement}</p>
             </div>
-            <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: 4, height: 6, overflow: "hidden", marginBottom: "0.75rem" }}>
-              <div style={{ height: "100%", background: BRAND.gold, width: `${Math.min(100, (settings.currentSavings / settings.savingsGoal) * 100)}%`, transition: "width 0.5s" }} />
-            </div>
-            <p style={{ fontSize: "0.82rem", color: BRAND.cream, fontStyle: "italic", margin: 0 }}>{analysis.encouragement}</p>
           </div>
 
           {analysis.aiInsights.length > 0 && (
-            <div style={{ background: BRAND.espressoMid, borderRadius: 8, padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.68rem", color: BRAND.terracotta, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>💡 Insights</div>
-              {analysis.aiInsights.map((insight, i) => (
-                <div key={i} style={{ fontSize: "0.85rem", color: BRAND.cream, lineHeight: 1.6, paddingLeft: "1rem", borderLeft: "2px solid rgba(196,98,45,0.4)", marginBottom: i < analysis.aiInsights.length - 1 ? "0.75rem" : 0 }}>{insight}</div>
-              ))}
+            <div style={{ background: BRAND.cardBg, borderRadius: 8, overflow: "hidden", border: `1px solid ${BRAND.cardBorder}`, boxShadow: "0 2px 8px rgba(44,58,48,0.06)" }}>
+              <SectionHeader label="Insights" color={BRAND.rose} />
+              <div style={{ padding: "1rem 1.1rem" }}>
+                {analysis.aiInsights.map((insight, i) => (
+                  <div key={i} style={{ fontSize: "0.85rem", color: BRAND.textMid, lineHeight: 1.6, paddingLeft: "0.85rem", borderLeft: `2px solid ${BRAND.rose}60`, marginBottom: i < analysis.aiInsights.length - 1 ? "0.75rem" : 0 }}>
+                    {insight}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {analysis.rebalanceSuggestions.length > 0 && (
-            <div style={{ background: BRAND.espressoMid, borderRadius: 8, padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.68rem", color: BRAND.green, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>⚖️ Rebalance Suggestions</div>
-              {analysis.rebalanceSuggestions.map((s, i) => (
-                <div key={i} style={{ fontSize: "0.85rem", color: BRAND.cream, lineHeight: 1.6, paddingLeft: "1rem", borderLeft: "2px solid rgba(46,139,87,0.4)", marginBottom: i < analysis.rebalanceSuggestions.length - 1 ? "0.75rem" : 0 }}>{s}</div>
-              ))}
+            <div style={{ background: BRAND.cardBg, borderRadius: 8, overflow: "hidden", border: `1px solid ${BRAND.cardBorder}`, boxShadow: "0 2px 8px rgba(44,58,48,0.06)" }}>
+              <SectionHeader label="Rebalance Suggestions" color={BRAND.sage} />
+              <div style={{ padding: "1rem 1.1rem" }}>
+                {analysis.rebalanceSuggestions.map((s, i) => (
+                  <div key={i} style={{ fontSize: "0.85rem", color: BRAND.textMid, lineHeight: 1.6, paddingLeft: "0.85rem", borderLeft: `2px solid ${BRAND.sage}60`, marginBottom: i < analysis.rebalanceSuggestions.length - 1 ? "0.75rem" : 0 }}>
+                    {s}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {analysis.tightPeriods.length > 0 && (
-            <div style={{ background: "rgba(231,76,60,0.08)", border: "1px solid rgba(231,76,60,0.25)", borderRadius: 8, padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.68rem", color: BRAND.red, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>⚠️ Tight Periods</div>
-              {analysis.tightPeriods.map((p, i) => (
-                <div key={i} style={{ fontSize: "0.85rem", color: BRAND.cream, lineHeight: 1.6, marginBottom: "0.4rem" }}>· {p}</div>
-              ))}
+            <div style={{ background: BRAND.cardBg, borderRadius: 8, overflow: "hidden", border: `1px solid ${BRAND.red}30`, boxShadow: "0 2px 8px rgba(184,80,80,0.06)" }}>
+              <SectionHeader label="Tight Periods" color={BRAND.red} />
+              <div style={{ padding: "1rem 1.1rem" }}>
+                {analysis.tightPeriods.map((p, i) => (
+                  <div key={i} style={{ fontSize: "0.85rem", color: BRAND.textMid, lineHeight: 1.6, marginBottom: "0.4rem" }}>· {p}</div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -806,22 +1020,29 @@ function Settings({ settings, updateSettings }: SettingsProps) {
 
   return (
     <div>
-      <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", fontWeight: 300, marginBottom: "1.5rem" }}>Settings</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", background: BRAND.espressoMid, borderRadius: 8, padding: "1.5rem" }}>
-        <div>
-          <label style={labelSt}>First Pay Date</label>
-          <input type="date" value={form.firstPayDate} onChange={(e) => setForm({ ...form, firstPayDate: e.target.value })} style={inputSt} />
-          <div style={{ fontSize: "0.7rem", color: BRAND.muted, marginTop: "0.3rem" }}>Biweekly periods are generated forward from this date</div>
+      <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.4rem", fontWeight: 400, marginBottom: "1.5rem", color: BRAND.textDark }}>
+        Settings
+      </h2>
+      <div style={{ background: BRAND.cardBg, borderRadius: 8, overflow: "hidden", border: `1px solid ${BRAND.cardBorder}`, boxShadow: "0 2px 8px rgba(44,58,48,0.05)" }}>
+        <SectionHeader label="Budget Settings" color={BRAND.sage} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1.5rem" }}>
+          <div>
+            <label style={labelSt}>First Pay Date</label>
+            <input type="date" value={form.firstPayDate} onChange={(e) => setForm({ ...form, firstPayDate: e.target.value })} style={inputSt} />
+            <div style={{ fontSize: "0.7rem", color: BRAND.textMuted, marginTop: "0.3rem" }}>Biweekly periods are generated forward from this date</div>
+          </div>
+          <div>
+            <label style={labelSt}>Current Period Balance ($)</label>
+            <input type="number" value={form.currentBalance} onChange={(e) => setForm({ ...form, currentBalance: parseFloat(e.target.value) || 0 })} style={inputSt} />
+            <div style={{ fontSize: "0.7rem", color: BRAND.textMuted, marginTop: "0.3rem" }}>This value is used as the opening balance for your current pay period.</div>
+          </div>
+          <div><label style={labelSt}>Savings Goal Name</label><input value={form.savingsGoalName} onChange={(e) => setForm({ ...form, savingsGoalName: e.target.value })} style={inputSt} /></div>
+          <div><label style={labelSt}>Savings Goal Amount ($)</label><input type="number" value={form.savingsGoal} onChange={(e) => setForm({ ...form, savingsGoal: parseFloat(e.target.value) || 0 })} style={inputSt} /></div>
+          <div><label style={labelSt}>Current Savings ($)</label><input type="number" value={form.currentSavings} onChange={(e) => setForm({ ...form, currentSavings: parseFloat(e.target.value) || 0 })} placeholder="0" style={inputSt} /></div>
+          <button onClick={save} style={{ padding: "0.8rem", background: BRAND.sage, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.9rem", fontWeight: 500 }}>
+            Save Settings
+          </button>
         </div>
-        <div>
-          <label style={labelSt}>Current Period Balance ($)</label>
-          <input type="number" value={form.currentBalance} onChange={(e) => setForm({ ...form, currentBalance: parseFloat(e.target.value) || 0 })} style={inputSt} />
-          <div style={{ fontSize: "0.7rem", color: BRAND.muted, marginTop: "0.3rem" }}>This value is used as the opening balance for your current pay period.</div>
-        </div>
-        <div><label style={labelSt}>Savings Goal Name</label><input value={form.savingsGoalName} onChange={(e) => setForm({ ...form, savingsGoalName: e.target.value })} style={inputSt} /></div>
-        <div><label style={labelSt}>Savings Goal Amount ($)</label><input type="number" value={form.savingsGoal} onChange={(e) => setForm({ ...form, savingsGoal: parseFloat(e.target.value) || 0 })} style={inputSt} /></div>
-        <div><label style={labelSt}>Current Savings ($)</label><input type="number" value={form.currentSavings} onChange={(e) => setForm({ ...form, currentSavings: parseFloat(e.target.value) || 0 })} placeholder="0" style={inputSt} /></div>
-        <button onClick={save} style={{ padding: "0.8rem", background: BRAND.terracotta, color: BRAND.cream, border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.9rem", fontWeight: 500 }}>Save Settings</button>
       </div>
     </div>
   );
@@ -897,28 +1118,48 @@ export default function PaycheckBudget() {
     { id: "settings",  label: "Settings",  emoji: "⚙️" },
   ];
 
+  const now = new Date();
+  const monthName = now.toLocaleDateString("en-US", { month: "long" }).toUpperCase();
+
   if (loading) return (
-    <div style={{ background: BRAND.espresso, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: BRAND.gold, fontFamily: "Georgia, serif", fontSize: "1.3rem" }}>Loading your budget...</div>
+    <div style={{ background: BRAND.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ color: BRAND.sage, fontFamily: "Georgia, serif", fontSize: "1.3rem" }}>Loading your budget...</div>
     </div>
   );
 
   return (
-    <div style={{ background: BRAND.espresso, minHeight: "100vh", fontFamily: "system-ui, sans-serif", color: BRAND.darkBrown }}>
-      <header style={{ background: BRAND.espressoMid, padding: "1rem 1.25rem", borderBottom: "1px solid rgba(201,164,68,0.2)", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{ background: BRAND.bg, minHeight: "100vh", fontFamily: "system-ui, sans-serif", color: BRAND.textDark }}>
+      {/* Header */}
+      <header style={{ background: BRAND.cardBg, borderBottom: `1px solid ${BRAND.border}`, position: "sticky", top: 0, zIndex: 50, boxShadow: "0 1px 6px rgba(44,58,48,0.07)" }}>
+        <div style={{ maxWidth: 700, margin: "0 auto", padding: "0.9rem 1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.1rem" }}>Booker Budget</div>
-            <div style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: BRAND.gold }}>Pay Period Tracker</div>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.05rem", fontStyle: "italic", color: BRAND.textDark, lineHeight: 1.1 }}>
+              Booker's
+            </div>
+            <div style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "0.05em", color: BRAND.textDark, lineHeight: 1.1 }}>
+              {monthName}
+            </div>
+            <div style={{ fontSize: "0.52rem", letterSpacing: "0.22em", textTransform: "uppercase", color: BRAND.textMuted, marginTop: "0.1rem" }}>
+              Budget Dashboard
+            </div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "0.65rem", color: BRAND.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>{settings.savingsGoalName}</div>
-            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.1rem", color: BRAND.gold }}>{formatMoney(settings.currentSavings)} / {formatMoney(settings.savingsGoal)}</div>
+            <div style={{ fontSize: "0.58rem", color: BRAND.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+              {settings.savingsGoalName}
+            </div>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: "1.05rem", color: BRAND.sage, fontWeight: 400 }}>
+              {formatMoney(settings.currentSavings)}
+              <span style={{ fontSize: "0.75rem", color: BRAND.textMuted }}> / {formatMoney(settings.savingsGoal)}</span>
+            </div>
+            <div style={{ background: BRAND.divider, borderRadius: 3, height: 4, overflow: "hidden", marginTop: "0.3rem", width: 120, marginLeft: "auto" }}>
+              <div style={{ height: "100%", background: BRAND.sage, width: `${Math.min(100, (settings.currentSavings / settings.savingsGoal) * 100)}%`, borderRadius: 3 }} />
+            </div>
           </div>
         </div>
       </header>
 
-      <main style={{ maxWidth: 700, margin: "1.5rem auto 6rem", padding: "1.75rem 1.5rem", background: BRAND.cream, borderRadius: 20, boxShadow: "0 30px 80px rgba(0,0,0,0.06)", border: "1px solid rgba(50,67,55,0.06)", color: BRAND.darkBrown }}>
+      {/* Main content */}
+      <main style={{ maxWidth: 700, margin: "1.25rem auto 5.5rem", padding: "0 1rem" }}>
         {tab === "dashboard" && <Dashboard periods={periods} currentPeriodIndex={currentPeriodIndex} settings={settings} updateSettings={updateSettings} paidStatus={paidStatus} togglePaid={togglePaid} />}
         {tab === "bills"     && <BillsManager bills={bills} updateBills={updateBills} />}
         {tab === "income"    && <IncomeManager income={income} updateIncome={updateIncome} />}
@@ -926,14 +1167,33 @@ export default function PaycheckBudget() {
         {tab === "settings"  && <Settings settings={settings} updateSettings={updateSettings} />}
       </main>
 
-      <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: BRAND.espressoMid, borderTop: "1px solid rgba(201,164,68,0.2)", display: "flex", justifyContent: "space-around", padding: "0.6rem 0" }}>
-        {TABS.map((t) => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            style={{ background: "transparent", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", padding: "0.25rem 0.5rem", color: tab === t.id ? BRAND.terracotta : BRAND.muted, transition: "color 0.2s" }}>
-            <span style={{ fontSize: "1.2rem" }}>{t.emoji}</span>
-            <span style={{ fontSize: "0.6rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>{t.label}</span>
-          </button>
-        ))}
+      {/* Bottom nav */}
+      <nav style={{
+        position: "fixed", bottom: 0, left: 0, right: 0,
+        background: BRAND.cardBg, borderTop: `1px solid ${BRAND.border}`,
+        display: "flex", justifyContent: "space-around", padding: "0.5rem 0",
+        boxShadow: "0 -2px 8px rgba(44,58,48,0.06)",
+      }}>
+        {TABS.map((t) => {
+          const isActive = tab === t.id;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{
+                background: "transparent", border: "none", cursor: "pointer",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: "0.12rem",
+                padding: "0.3rem 0.6rem", color: isActive ? BRAND.sage : BRAND.textMuted,
+                transition: "color 0.2s", position: "relative",
+              }}>
+              {isActive && (
+                <div style={{ position: "absolute", top: 0, left: "15%", right: "15%", height: 2, background: BRAND.sage, borderRadius: "0 0 2px 2px" }} />
+              )}
+              <span style={{ fontSize: "1.15rem" }}>{t.emoji}</span>
+              <span style={{ fontSize: "0.58rem", letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: isActive ? 600 : 400 }}>
+                {t.label}
+              </span>
+            </button>
+          );
+        })}
       </nav>
     </div>
   );
