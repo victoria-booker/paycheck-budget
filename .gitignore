@@ -1,1 +1,6 @@
 SETUP INSTRUCTIONS.sh
+
+# Environment variables
+.env
+.env.local
+.env.*.local
